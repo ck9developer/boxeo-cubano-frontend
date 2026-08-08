@@ -1,0 +1,163 @@
+<div class="mb-6">
+  <h1 class="text-2xl font-bold text-neutral-900">Configuración</h1>
+  <p class="mt-1 text-sm text-neutral-500">Gestiona los ajustes de tu gimnasio.</p>
+</div>
+
+@if (loading()) {
+  <p class="text-neutral-400">Cargando configuración...</p>
+} @else {
+  <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+    <div class="rounded-xl bg-white p-6 shadow-sm">
+      <div class="mb-5 flex items-center gap-2">
+        <svg viewBox="0 0 24 24" class="h-5 w-5 text-brand-red" fill="none" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4" />
+        </svg>
+        <h3 class="text-base font-bold text-neutral-900">Información del gimnasio</h3>
+      </div>
+
+      <form class="space-y-4" (ngSubmit)="guardarInfo()">
+        <div>
+          <label class="mb-1 block text-sm font-medium text-neutral-700">Nombre del gimnasio</label>
+          <input
+            type="text"
+            name="nombre"
+            [(ngModel)]="form.nombre"
+            class="w-full rounded-lg border border-neutral-300 px-3 py-2.5 text-sm focus:border-brand-red focus:outline-none focus:ring-1 focus:ring-brand-red"
+          />
+        </div>
+        <div>
+          <label class="mb-1 block text-sm font-medium text-neutral-700">Email de contacto</label>
+          <input
+            type="email"
+            name="email"
+            [(ngModel)]="form.email"
+            class="w-full rounded-lg border border-neutral-300 px-3 py-2.5 text-sm focus:border-brand-red focus:outline-none focus:ring-1 focus:ring-brand-red"
+          />
+        </div>
+        <div>
+          <label class="mb-1 block text-sm font-medium text-neutral-700">Teléfono de contacto</label>
+          <input
+            type="text"
+            name="telefono"
+            [(ngModel)]="form.telefono"
+            class="w-full rounded-lg border border-neutral-300 px-3 py-2.5 text-sm focus:border-brand-red focus:outline-none focus:ring-1 focus:ring-brand-red"
+          />
+        </div>
+        <div>
+          <label class="mb-1 block text-sm font-medium text-neutral-700">Dirección</label>
+          <input
+            type="text"
+            name="direccion"
+            [(ngModel)]="form.direccion"
+            class="w-full rounded-lg border border-neutral-300 px-3 py-2.5 text-sm focus:border-brand-red focus:outline-none focus:ring-1 focus:ring-brand-red"
+          />
+        </div>
+        <div>
+          <label class="mb-1 block text-sm font-medium text-neutral-700">Zona horaria</label>
+          <input
+            type="text"
+            name="timezone"
+            [(ngModel)]="form.timezone"
+            class="w-full rounded-lg border border-neutral-300 px-3 py-2.5 text-sm focus:border-brand-red focus:outline-none focus:ring-1 focus:ring-brand-red"
+          />
+        </div>
+
+        <div class="flex items-center gap-3 pt-2">
+          <button
+            type="submit"
+            [disabled]="savingInfo()"
+            class="flex items-center gap-2 rounded-lg bg-brand-red px-4 py-2.5 text-sm font-semibold text-white hover:bg-brand-red-dark disabled:opacity-60"
+          >
+            <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M17 21v-8H7v8M7 3v5h8" />
+            </svg>
+            {{ savingInfo() ? 'Guardando...' : 'Guardar cambios' }}
+          </button>
+          @if (savedInfo()) {
+            <span class="text-sm font-medium text-emerald-600">Guardado</span>
+          }
+        </div>
+      </form>
+    </div>
+
+    <div class="rounded-xl bg-white p-6 shadow-sm">
+      <div class="mb-5 flex items-center gap-2">
+        <svg viewBox="0 0 24 24" class="h-5 w-5 text-brand-red" fill="none" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M7 7h.01M7 3h5a2 2 0 011.414.586l7 7a2 2 0 010 2.828l-5 5a2 2 0 01-2.828 0l-7-7A2 2 0 015 10V5a2 2 0 012-2z" />
+        </svg>
+        <h3 class="text-base font-bold text-neutral-900">Cuotas y precios</h3>
+      </div>
+
+      <form class="space-y-4" (ngSubmit)="guardarCuotas()">
+        <div>
+          <label class="mb-1 block text-sm font-medium text-neutral-700">Cuota 3 días/semana</label>
+          <div class="relative">
+            <input
+              type="number"
+              step="0.01"
+              name="cuotaTresDias"
+              [(ngModel)]="form.cuotaTresDias"
+              class="w-full rounded-lg border border-neutral-300 px-3 py-2.5 pr-8 text-sm focus:border-brand-red focus:outline-none focus:ring-1 focus:ring-brand-red"
+            />
+            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-neutral-400">€</span>
+          </div>
+        </div>
+        <div>
+          <label class="mb-1 block text-sm font-medium text-neutral-700">Cuota 4 días/semana</label>
+          <div class="relative">
+            <input
+              type="number"
+              step="0.01"
+              name="cuotaCuatroDias"
+              [(ngModel)]="form.cuotaCuatroDias"
+              class="w-full rounded-lg border border-neutral-300 px-3 py-2.5 pr-8 text-sm focus:border-brand-red focus:outline-none focus:ring-1 focus:ring-brand-red"
+            />
+            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-neutral-400">€</span>
+          </div>
+        </div>
+        <div>
+          <label class="mb-1 block text-sm font-medium text-neutral-700">Cuota todos los días</label>
+          <div class="relative">
+            <input
+              type="number"
+              step="0.01"
+              name="cuotaTodosDias"
+              [(ngModel)]="form.cuotaTodosDias"
+              class="w-full rounded-lg border border-neutral-300 px-3 py-2.5 pr-8 text-sm focus:border-brand-red focus:outline-none focus:ring-1 focus:ring-brand-red"
+            />
+            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-neutral-400">€</span>
+          </div>
+        </div>
+        <div>
+          <label class="mb-1 block text-sm font-medium text-neutral-700">Día de vencimiento de pago</label>
+          <select
+            name="diaVencimiento"
+            [(ngModel)]="form.diaVencimiento"
+            class="w-full rounded-lg border border-neutral-300 px-3 py-2.5 text-sm focus:border-brand-red focus:outline-none focus:ring-1 focus:ring-brand-red"
+          >
+            @for (dia of dias; track dia) {
+              <option [value]="dia">{{ dia }}</option>
+            }
+          </select>
+          <p class="mt-1 text-xs text-neutral-400">Día del mes en que vence la cuota</p>
+        </div>
+
+        <div class="flex items-center gap-3 pt-2">
+          <button
+            type="submit"
+            [disabled]="savingCuotas()"
+            class="flex items-center gap-2 rounded-lg bg-brand-red px-4 py-2.5 text-sm font-semibold text-white hover:bg-brand-red-dark disabled:opacity-60"
+          >
+            <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M17 21v-8H7v8M7 3v5h8" />
+            </svg>
+            {{ savingCuotas() ? 'Guardando...' : 'Guardar cambios' }}
+          </button>
+          @if (savedCuotas()) {
+            <span class="text-sm font-medium text-emerald-600">Guardado</span>
+          }
+        </div>
+      </form>
+    </div>
+  </div>
+}

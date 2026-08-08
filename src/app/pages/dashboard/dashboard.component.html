@@ -1,0 +1,127 @@
+<div class="mb-6 flex items-center justify-between">
+  <div>
+    <h1 class="text-2xl font-bold text-neutral-900">¡Hola, {{ authService.user()?.username ?? 'Admin' }}!</h1>
+    <p class="mt-1 text-sm text-neutral-500">Aquí tienes un resumen de tu gimnasio.</p>
+  </div>
+</div>
+
+<div class="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
+  <div class="flex items-center gap-4 rounded-xl bg-white p-5 shadow-sm">
+    <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-red-100 text-brand-red">
+      <svg viewBox="0 0 24 24" class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2">
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m5-4a4 4 0 100-8 4 4 0 000 8zm6 4a4 4 0 00-6-3.5"
+        />
+      </svg>
+    </div>
+    <div>
+      <div class="text-sm text-neutral-500">Clientes activos</div>
+      <div class="text-2xl font-bold text-neutral-900">{{ resumen()?.clientesActivos ?? '—' }}</div>
+      <div class="text-xs text-neutral-400">Clientes con cuota activa</div>
+    </div>
+  </div>
+
+  <div class="flex items-center gap-4 rounded-xl bg-white p-5 shadow-sm">
+    <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-100 text-amber-600">
+      <svg viewBox="0 0 24 24" class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2">
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M3 10h18M5 6h14a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2z"
+        />
+      </svg>
+    </div>
+    <div>
+      <div class="text-sm text-neutral-500">Pagos pendientes</div>
+      <div class="text-2xl font-bold text-neutral-900">{{ resumen()?.pagosPendientes ?? '—' }}</div>
+      <div class="text-xs text-neutral-400">Clientes con pagos pendientes</div>
+    </div>
+  </div>
+
+  <div class="flex items-center gap-4 rounded-xl bg-white p-5 shadow-sm">
+    <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-100 text-emerald-600">
+      <span class="text-xl font-bold">€</span>
+    </div>
+    <div>
+      <div class="text-sm text-neutral-500">Ingresos del mes</div>
+      <div class="text-2xl font-bold text-neutral-900">{{ resumen()?.ingresosMes ?? '—' }} €</div>
+      <div class="text-xs text-neutral-400">Total ingresado este mes</div>
+    </div>
+  </div>
+</div>
+
+<button
+  type="button"
+  (click)="abrirNuevo()"
+  class="mb-6 flex items-center gap-2 rounded-lg bg-brand-red px-4 py-2.5 text-sm font-semibold text-white hover:bg-brand-red-dark"
+>
+  <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2.5">
+    <path stroke-linecap="round" d="M12 5v14M5 12h14" />
+  </svg>
+  Nuevo cliente
+</button>
+
+<div class="overflow-hidden rounded-xl bg-white shadow-sm">
+  <div class="flex items-center justify-between border-b border-neutral-100 px-6 py-4">
+    <h3 class="text-sm font-semibold text-neutral-900">Clientes recientes</h3>
+    <a routerLink="/clientes" class="text-sm font-medium text-brand-red hover:underline">Ver todos</a>
+  </div>
+
+  <div class="overflow-x-auto">
+    <table class="w-full text-left text-sm">
+      <thead>
+        <tr class="border-b border-neutral-100 text-xs uppercase tracking-wide text-neutral-400">
+          <th class="px-6 py-3 font-medium">Nombre</th>
+          <th class="px-6 py-3 font-medium">Tipo de cuota</th>
+          <th class="px-6 py-3 font-medium">Estado</th>
+          <th class="px-6 py-3 font-medium">Fecha de alta</th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (loading()) {
+          <tr>
+            <td colspan="4" class="px-6 py-10 text-center text-neutral-400">Cargando...</td>
+          </tr>
+        } @else if (clientesRecientes().length === 0) {
+          <tr>
+            <td colspan="4" class="px-6 py-10 text-center text-neutral-400">Todavía no hay clientes.</td>
+          </tr>
+        } @else {
+          @for (cliente of clientesRecientes(); track cliente.id) {
+            <tr (click)="verCliente(cliente)" class="cursor-pointer border-b border-neutral-50 transition hover:bg-neutral-50">
+              <td class="px-6 py-4">
+                <div class="flex items-center gap-3">
+                  <div class="flex h-9 w-9 items-center justify-center rounded-full bg-red-100 text-sm font-semibold text-brand-red">
+                    {{ cliente.nombre.charAt(0).toUpperCase() }}
+                  </div>
+                  <div>
+                    <div class="font-medium text-neutral-900">{{ cliente.nombre }}</div>
+                    <div class="text-xs text-neutral-400">{{ cliente.telefono }}</div>
+                  </div>
+                </div>
+              </td>
+              <td class="px-6 py-4 text-neutral-600">{{ tipoCuotaLabel[cliente.tipoCuota] }}</td>
+              <td class="px-6 py-4">
+                @if (cliente.estado === 'pendiente') {
+                  <span class="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-semibold text-amber-700">Pendiente</span>
+                } @else {
+                  <span class="rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-semibold text-emerald-700">Al día</span>
+                }
+              </td>
+              <td class="px-6 py-4 text-neutral-600">{{ cliente.fechaAlta | date: 'dd MMM yyyy' }}</td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<app-cliente-form-modal
+  [open]="modalOpen()"
+  [cliente]="null"
+  (closed)="onModalClosed()"
+  (saved)="onSaved()"
+></app-cliente-form-modal>

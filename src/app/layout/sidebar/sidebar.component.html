@@ -1,0 +1,91 @@
+<aside class="flex h-screen w-64 flex-shrink-0 flex-col bg-neutral-900 text-white">
+  <div class="px-6 pt-8 pb-6">
+    <div class="flex items-center gap-2">
+      <svg viewBox="0 0 24 24" class="h-7 w-7 fill-brand-red">
+        <path
+          d="M12 2l2.39 4.84 5.34.78-3.87 3.77.91 5.32L12 14.27l-4.77 2.44.91-5.32-3.87-3.77 5.34-.78L12 2z"
+        />
+      </svg>
+      <div class="leading-tight">
+        <div class="text-lg font-extrabold tracking-wide">BOXEO</div>
+        <div class="-mt-1 text-lg font-extrabold tracking-wide text-brand-red">CUBANO</div>
+      </div>
+    </div>
+    <div class="mt-2 text-[10px] font-semibold tracking-widest text-neutral-400">
+      DISCIPLINA • TÉCNICA • CORAZÓN
+    </div>
+  </div>
+
+  <nav class="flex-1 space-y-1 px-4">
+    <a
+      routerLink="/inicio"
+      routerLinkActive="bg-brand-red text-white"
+      class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-neutral-300 transition hover:bg-neutral-800 hover:text-white"
+    >
+      <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l9-9 9 9M5 10v10h14V10" />
+      </svg>
+      Inicio
+    </a>
+    <a
+      routerLink="/clientes"
+      routerLinkActive="bg-brand-red text-white"
+      class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-neutral-300 transition hover:bg-neutral-800 hover:text-white"
+    >
+      <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2">
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m5-4a4 4 0 100-8 4 4 0 000 8zm6 4a4 4 0 00-6-3.5"
+        />
+      </svg>
+      Clientes
+    </a>
+    <a
+      routerLink="/configuracion"
+      routerLinkActive="bg-brand-red text-white"
+      class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-neutral-300 transition hover:bg-neutral-800 hover:text-white"
+    >
+      <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2">
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M10.325 4.317a1.724 1.724 0 013.35 0 1.724 1.724 0 002.591 1.066 1.724 1.724 0 012.37 2.37 1.724 1.724 0 001.065 2.592 1.724 1.724 0 010 3.35 1.724 1.724 0 00-1.066 2.591 1.724 1.724 0 01-2.37 2.37 1.724 1.724 0 00-2.591 1.065 1.724 1.724 0 01-3.35 0 1.724 1.724 0 00-2.592-1.066 1.724 1.724 0 01-2.37-2.37 1.724 1.724 0 00-1.065-2.591 1.724 1.724 0 010-3.35 1.724 1.724 0 001.066-2.592 1.724 1.724 0 012.37-2.37c1 .608 2.296.07 2.591-1.065z"
+        />
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+      </svg>
+      Configuración
+    </a>
+
+    <div class="pt-4">
+      <button
+        type="button"
+        (click)="logout()"
+        class="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-neutral-300 transition hover:bg-neutral-800 hover:text-white"
+      >
+        <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M17 16l4-4m0 0l-4-4m4 4H7m6 5v1a3 3 0 01-3 3H6a3 3 0 01-3-3V6a3 3 0 013-3h4a3 3 0 013 3v1"
+          />
+        </svg>
+        Cerrar sesión
+      </button>
+    </div>
+  </nav>
+
+  <div class="border-t border-neutral-800 px-4 py-4">
+    <div class="flex items-center gap-3">
+      <div
+        class="flex h-9 w-9 items-center justify-center rounded-full bg-neutral-700 text-sm font-semibold"
+      >
+        {{ authService.user()?.username?.charAt(0)?.toUpperCase() ?? 'A' }}
+      </div>
+      <div class="leading-tight">
+        <div class="text-sm font-semibold">{{ authService.user()?.username ?? 'Admin' }}</div>
+        <div class="text-xs text-neutral-400">Administrador</div>
+      </div>
+    </div>
+  </div>
+</aside>

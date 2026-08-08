@@ -1,0 +1,242 @@
+<div class="mb-6 flex items-center justify-between">
+  <div>
+    <h1 class="text-2xl font-bold text-neutral-900">Clientes</h1>
+    <p class="mt-1 text-sm text-neutral-500">Gestiona y consulta la información de tus clientes.</p>
+  </div>
+</div>
+
+<div class="mb-6 flex flex-wrap items-center gap-3">
+  <div class="relative flex-1 min-w-[240px]">
+    <svg
+      viewBox="0 0 24 24"
+      class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+    >
+      <circle cx="11" cy="11" r="8" />
+      <path stroke-linecap="round" d="M21 21l-4.35-4.35" />
+    </svg>
+    <input
+      type="text"
+      [(ngModel)]="search"
+      (ngModelChange)="onSearchChange()"
+      placeholder="Buscar cliente por nombre, teléfono o email..."
+      class="w-full rounded-lg border border-neutral-300 bg-white py-2.5 pl-9 pr-3 text-sm focus:border-brand-red focus:outline-none focus:ring-1 focus:ring-brand-red"
+    />
+  </div>
+
+  <select
+    [(ngModel)]="estado"
+    (ngModelChange)="onFilterChange()"
+    class="rounded-lg border border-neutral-300 bg-white px-3 py-2.5 text-sm focus:border-brand-red focus:outline-none focus:ring-1 focus:ring-brand-red"
+  >
+    <option value="">Estado: Todos</option>
+    <option value="al_dia">Al día</option>
+    <option value="pendiente">Pendiente</option>
+  </select>
+
+  <select
+    [(ngModel)]="tipoCuota"
+    (ngModelChange)="onFilterChange()"
+    class="rounded-lg border border-neutral-300 bg-white px-3 py-2.5 text-sm focus:border-brand-red focus:outline-none focus:ring-1 focus:ring-brand-red"
+  >
+    <option value="">Tipo de cuota: Todos</option>
+    <option value="TRES_DIAS">{{ tipoCuotaLabel['TRES_DIAS'] }}</option>
+    <option value="CUATRO_DIAS">{{ tipoCuotaLabel['CUATRO_DIAS'] }}</option>
+    <option value="TODOS_LOS_DIAS">{{ tipoCuotaLabel['TODOS_LOS_DIAS'] }}</option>
+  </select>
+
+  <button
+    type="button"
+    (click)="abrirNuevo()"
+    class="flex items-center gap-2 rounded-lg bg-brand-red px-4 py-2.5 text-sm font-semibold text-white hover:bg-brand-red-dark"
+  >
+    <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2.5">
+      <path stroke-linecap="round" d="M12 5v14M5 12h14" />
+    </svg>
+    Nuevo cliente
+  </button>
+</div>
+
+<div class="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
+  <div class="flex items-center gap-4 rounded-xl bg-white p-5 shadow-sm">
+    <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-red-100 text-brand-red">
+      <svg viewBox="0 0 24 24" class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2">
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m5-4a4 4 0 100-8 4 4 0 000 8zm6 4a4 4 0 00-6-3.5"
+        />
+      </svg>
+    </div>
+    <div>
+      <div class="text-sm text-neutral-500">Clientes activos</div>
+      <div class="text-2xl font-bold text-neutral-900">{{ resumen()?.clientesActivos ?? '—' }}</div>
+      <div class="text-xs text-neutral-400">Con cuota activa</div>
+    </div>
+  </div>
+
+  <div class="flex items-center gap-4 rounded-xl bg-white p-5 shadow-sm">
+    <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-100 text-amber-600">
+      <svg viewBox="0 0 24 24" class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2">
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M3 10h18M5 6h14a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2z"
+        />
+      </svg>
+    </div>
+    <div>
+      <div class="text-sm text-neutral-500">Pagos pendientes</div>
+      <div class="text-2xl font-bold text-neutral-900">{{ resumen()?.pagosPendientes ?? '—' }}</div>
+      <div class="text-xs text-neutral-400">Clientes con pagos pendientes</div>
+    </div>
+  </div>
+
+  <div class="flex items-center gap-4 rounded-xl bg-white p-5 shadow-sm">
+    <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-100 text-emerald-600">
+      <span class="text-xl font-bold">€</span>
+    </div>
+    <div>
+      <div class="text-sm text-neutral-500">Ingresos del mes</div>
+      <div class="text-2xl font-bold text-neutral-900">{{ resumen()?.ingresosMes ?? '—' }} €</div>
+      <div class="text-xs text-neutral-400">Total ingresado este mes</div>
+    </div>
+  </div>
+</div>
+
+<div class="overflow-hidden rounded-xl bg-white shadow-sm">
+  <div class="overflow-x-auto">
+    <table class="w-full text-left text-sm">
+      <thead>
+        <tr class="border-b border-neutral-100 text-xs uppercase tracking-wide text-neutral-400">
+          <th class="px-6 py-4 font-medium">Nombre</th>
+          <th class="px-6 py-4 font-medium">Teléfono</th>
+          <th class="px-6 py-4 font-medium">Email</th>
+          <th class="px-6 py-4 font-medium">Tipo de cuota</th>
+          <th class="px-6 py-4 font-medium">Estado</th>
+          <th class="px-6 py-4 font-medium">Fecha de alta</th>
+          <th class="px-6 py-4 font-medium">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (loading()) {
+          <tr>
+            <td colspan="7" class="px-6 py-10 text-center text-neutral-400">Cargando clientes...</td>
+          </tr>
+        } @else if (clientes().length === 0) {
+          <tr>
+            <td colspan="7" class="px-6 py-10 text-center text-neutral-400">No hay clientes que coincidan con la búsqueda.</td>
+          </tr>
+        } @else {
+          @for (cliente of clientes(); track cliente.id) {
+            <tr
+              (click)="verCliente(cliente)"
+              class="cursor-pointer border-b border-neutral-50 transition hover:bg-neutral-50"
+            >
+              <td class="px-6 py-4">
+                <div class="flex items-center gap-3">
+                  <div
+                    class="flex h-9 w-9 items-center justify-center rounded-full bg-red-100 text-sm font-semibold text-brand-red"
+                  >
+                    {{ cliente.nombre.charAt(0).toUpperCase() }}
+                  </div>
+                  <span class="font-medium text-neutral-900">{{ cliente.nombre }}</span>
+                </div>
+              </td>
+              <td class="px-6 py-4 text-neutral-600">{{ cliente.telefono }}</td>
+              <td class="px-6 py-4 text-neutral-600">{{ cliente.email }}</td>
+              <td class="px-6 py-4 text-neutral-600">{{ tipoCuotaLabel[cliente.tipoCuota] }}</td>
+              <td class="px-6 py-4">
+                @if (cliente.estado === 'pendiente') {
+                  <span class="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-semibold text-amber-700">Pendiente</span>
+                } @else {
+                  <span class="rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-semibold text-emerald-700">Al día</span>
+                }
+              </td>
+              <td class="px-6 py-4 text-neutral-600">{{ cliente.fechaAlta | date: 'dd MMM yyyy' }}</td>
+              <td class="px-6 py-4">
+                <div class="flex items-center gap-2">
+                  <button
+                    type="button"
+                    (click)="editar(cliente, $event)"
+                    class="flex h-8 w-8 items-center justify-center rounded-lg border border-neutral-200 text-neutral-500 hover:bg-neutral-100"
+                  >
+                    <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2">
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                      />
+                    </svg>
+                  </button>
+                  <button
+                    type="button"
+                    (click)="eliminar(cliente, $event)"
+                    class="flex h-8 w-8 items-center justify-center rounded-lg border border-red-200 text-brand-red hover:bg-red-50"
+                  >
+                    <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2">
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V4a1 1 0 011-1h4a1 1 0 011 1v3M4 7h16"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="flex flex-wrap items-center justify-between gap-3 border-t border-neutral-100 px-6 py-4">
+    <span class="text-sm text-neutral-500">
+      Mostrando {{ fromIndex() }} a {{ toIndex() }} de {{ total() }} clientes
+    </span>
+    <div class="flex items-center gap-1">
+      <button
+        type="button"
+        (click)="goToPage(page() - 1)"
+        [disabled]="page() === 1"
+        class="flex h-8 w-8 items-center justify-center rounded-lg border border-neutral-200 text-neutral-500 disabled:opacity-40 hover:enabled:bg-neutral-100"
+      >
+        <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+        </svg>
+      </button>
+      @for (p of pagesArray(); track p) {
+        <button
+          type="button"
+          (click)="goToPage(p)"
+          [class.bg-brand-red]="page() === p"
+          [class.text-white]="page() === p"
+          [class.text-neutral-600]="page() !== p"
+          class="flex h-8 w-8 items-center justify-center rounded-lg border border-neutral-200 text-sm font-medium hover:enabled:bg-neutral-100"
+        >
+          {{ p }}
+        </button>
+      }
+      <button
+        type="button"
+        (click)="goToPage(page() + 1)"
+        [disabled]="page() === totalPages()"
+        class="flex h-8 w-8 items-center justify-center rounded-lg border border-neutral-200 text-neutral-500 disabled:opacity-40 hover:enabled:bg-neutral-100"
+      >
+        <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<app-cliente-form-modal
+  [open]="modalOpen()"
+  [cliente]="clienteEnEdicion()"
+  (closed)="onModalClosed()"
+  (saved)="onSaved()"
+></app-cliente-form-modal>

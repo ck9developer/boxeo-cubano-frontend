@@ -2,20 +2,20 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import {
-  Cliente,
-  ClientesPage,
-  CreateClienteDto,
-  QueryClientes,
-  UpdateClienteDto,
-} from '../models/cliente.model';
+  Client,
+  ClientsPage,
+  CreateClientDto,
+  QueryClients,
+  UpdateClientDto,
+} from '../models/client.model';
 
 @Injectable({ providedIn: 'root' })
-export class ClientesService {
+export class ClientsService {
   private readonly baseUrl = `${environment.apiUrl}/clientes`;
 
   constructor(private readonly http: HttpClient) {}
 
-  findAll(query: QueryClientes) {
+  findAll(query: QueryClients) {
     let params = new HttpParams();
     if (query.search) params = params.set('search', query.search);
     if (query.tipoCuota) params = params.set('tipoCuota', query.tipoCuota);
@@ -23,19 +23,19 @@ export class ClientesService {
     if (query.page) params = params.set('page', query.page);
     if (query.perPage) params = params.set('perPage', query.perPage);
 
-    return this.http.get<ClientesPage>(this.baseUrl, { params });
+    return this.http.get<ClientsPage>(this.baseUrl, { params });
   }
 
   findOne(id: string) {
-    return this.http.get<Cliente>(`${this.baseUrl}/${id}`);
+    return this.http.get<Client>(`${this.baseUrl}/${id}`);
   }
 
-  create(dto: CreateClienteDto) {
-    return this.http.post<Cliente>(this.baseUrl, dto);
+  create(dto: CreateClientDto) {
+    return this.http.post<Client>(this.baseUrl, dto);
   }
 
-  update(id: string, dto: UpdateClienteDto) {
-    return this.http.patch<Cliente>(`${this.baseUrl}/${id}`, dto);
+  update(id: string, dto: UpdateClientDto) {
+    return this.http.patch<Client>(`${this.baseUrl}/${id}`, dto);
   }
 
   remove(id: string) {

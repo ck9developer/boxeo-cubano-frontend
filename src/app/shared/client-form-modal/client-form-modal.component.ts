@@ -1,40 +1,40 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output, OnChanges, SimpleChanges, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Cliente, CreateClienteDto, TipoCuota, TIPO_CUOTA_LABEL } from '../../core/models/cliente.model';
-import { ClientesService } from '../../core/services/clientes.service';
+import { Client, CreateClientDto, FeeType, FEE_TYPE_LABEL } from '../../core/models/client.model';
+import { ClientsService } from '../../core/services/clients.service';
 
 @Component({
-  selector: 'app-cliente-form-modal',
+  selector: 'app-client-form-modal',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './cliente-form-modal.component.html',
+  templateUrl: './client-form-modal.component.html',
 })
-export class ClienteFormModalComponent implements OnChanges {
+export class ClientFormModalComponent implements OnChanges {
   @Input() open = false;
-  @Input() cliente: Cliente | null = null;
+  @Input() client: Client | null = null;
   @Output() closed = new EventEmitter<void>();
-  @Output() saved = new EventEmitter<Cliente>();
+  @Output() saved = new EventEmitter<Client>();
 
-  readonly tiposCuota: TipoCuota[] = ['TRES_DIAS', 'CUATRO_DIAS', 'TODOS_LOS_DIAS'];
-  readonly tipoCuotaLabel = TIPO_CUOTA_LABEL;
+  readonly feeTypes: FeeType[] = ['TRES_DIAS', 'CUATRO_DIAS', 'TODOS_LOS_DIAS'];
+  readonly feeTypeLabel = FEE_TYPE_LABEL;
 
-  form: CreateClienteDto = this.emptyForm();
+  form: CreateClientDto = this.emptyForm();
   saving = signal(false);
   errorMessage = signal('');
 
-  constructor(private readonly clientesService: ClientesService) {}
+  constructor(private readonly clientsService: ClientsService) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['open'] && this.open) {
       this.errorMessage.set('');
-      this.form = this.cliente
+      this.form = this.client
         ? {
-            nombre: this.cliente.nombre,
-            telefono: this.cliente.telefono,
-            email: this.cliente.email,
-            tipoCuota: this.cliente.tipoCuota,
-            observaciones: this.cliente.observaciones ?? '',
+            nombre: this.client.nombre,
+            telefono: this.client.telefono,
+            email: this.client.email,
+            tipoCuota: this.client.tipoCuota,
+            observaciones: this.client.observaciones ?? '',
           }
         : this.emptyForm();
     }
@@ -53,14 +53,14 @@ export class ClienteFormModalComponent implements OnChanges {
     this.saving.set(true);
     this.errorMessage.set('');
 
-    const request = this.cliente
-      ? this.clientesService.update(this.cliente.id, this.form)
-      : this.clientesService.create(this.form);
+    const request = this.client
+      ? this.clientsService.update(this.client.id, this.form)
+      : this.clientsService.create(this.form);
 
     request.subscribe({
-      next: (cliente) => {
+      next: (client) => {
         this.saving.set(false);
-        this.saved.emit(cliente);
+        this.saved.emit(client);
       },
       error: () => {
         this.saving.set(false);
@@ -69,7 +69,7 @@ export class ClienteFormModalComponent implements OnChanges {
     });
   }
 
-  private emptyForm(): CreateClienteDto {
+  private emptyForm(): CreateClientDto {
     return { nombre: '', telefono: '', email: '', tipoCuota: 'TRES_DIAS', observaciones: '' };
   }
 }

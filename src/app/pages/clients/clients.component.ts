@@ -3,33 +3,28 @@ import { Component, OnInit, computed, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subject, debounceTime } from 'rxjs';
-import {
-  Cliente,
-  EstadoCliente,
-  TipoCuota,
-  TIPO_CUOTA_LABEL,
-} from '../../core/models/cliente.model';
-import { ClientesService } from '../../core/services/clientes.service';
+import { Client, ClientStatus, FeeType, FEE_TYPE_LABEL } from '../../core/models/client.model';
+import { ClientsService } from '../../core/services/clients.service';
 import { DashboardService } from '../../core/services/dashboard.service';
-import { DashboardResumen } from '../../core/models/auth.model';
-import { ClienteFormModalComponent } from '../../shared/cliente-form-modal/cliente-form-modal.component';
+import { DashboardSummary } from '../../core/models/auth.model';
+import { ClientFormModalComponent } from '../../shared/client-form-modal/client-form-modal.component';
 
 @Component({
-  selector: 'app-clientes',
+  selector: 'app-clients',
   standalone: true,
-  imports: [CommonModule, FormsModule, ClienteFormModalComponent],
-  templateUrl: './clientes.component.html',
+  imports: [CommonModule, FormsModule, ClientFormModalComponent],
+  templateUrl: './clients.component.html',
 })
-export class ClientesComponent implements OnInit {
-  readonly tipoCuotaLabel = TIPO_CUOTA_LABEL;
+export class ClientsComponent implements OnInit {
+  readonly feeTypeLabel = FEE_TYPE_LABEL;
 
-  clientes = signal<Cliente[]>([]);
-  resumen = signal<DashboardResumen | null>(null);
+  clients = signal<Client[]>([]);
+  summary = signal<DashboardSummary | null>(null);
   loading = signal(true);
 
   search = '';
-  estado: EstadoCliente | '' = '';
-  tipoCuota: TipoCuota | '' = '';
+  estado: ClientStatus | '' = '';
+  tipoCuota: FeeType | '' = '';
   page = signal(1);
   perPage = 8;
   total = signal(0);
@@ -37,12 +32,12 @@ export class ClientesComponent implements OnInit {
   pagesArray = computed(() => Array.from({ length: this.totalPages() }, (_, i) => i + 1));
 
   modalOpen = signal(false);
-  clienteEnEdicion = signal<Cliente | null>(null);
+  clientBeingEdited = signal<Client | null>(null);
 
   private readonly searchInput$ = new Subject<string>();
 
   constructor(
-    private readonly clientesService: ClientesService,
+    private readonly clientsService: ClientsService,
     private readonly dashboardService: DashboardService,
     private readonly router: Router,
   ) {
@@ -54,7 +49,7 @@ export class ClientesComponent implements OnInit {
 
   ngOnInit(): void {
     this.load();
-    this.loadResumen();
+    this.loadSummary();
   }
 
   onSearchChange() {
@@ -68,7 +63,7 @@ export class ClientesComponent implements OnInit {
 
   load() {
     this.loading.set(true);
-    this.clientesService
+    this.clientsService
       .findAll({
         search: this.search || undefined,
         estado: this.estado || undefined,
@@ -78,7 +73,7 @@ export class ClientesComponent implements OnInit {
       })
       .subscribe({
         next: (res) => {
-          this.clientes.set(res.data);
+          this.clients.set(res.data);
           this.total.set(res.meta.total);
           this.totalPages.set(res.meta.totalPages);
           this.loading.set(false);
@@ -87,8 +82,8 @@ export class ClientesComponent implements OnInit {
       });
   }
 
-  loadResumen() {
-    this.dashboardService.getResumen().subscribe((res) => this.resumen.set(res));
+  loadSummary() {
+    this.dashboardService.getSummary().subscribe((res) => this.summary.set(res));
   }
 
   goToPage(page: number) {
@@ -97,28 +92,28 @@ export class ClientesComponent implements OnInit {
     this.load();
   }
 
-  verCliente(cliente: Cliente) {
-    this.router.navigate(['/clientes', cliente.id]);
+  viewClient(client: Client) {
+    this.router.navigate(['/clients', client.id]);
   }
 
-  abrirNuevo() {
-    this.clienteEnEdicion.set(null);
+  openNew() {
+    this.clientBeingEdited.set(null);
     this.modalOpen.set(true);
   }
 
-  editar(cliente: Cliente, event: Event) {
+  edit(client: Client, event: Event) {
     event.stopPropagation();
-    this.clienteEnEdicion.set(cliente);
+    this.clientBeingEdited.set(client);
     this.modalOpen.set(true);
   }
 
-  eliminar(cliente: Cliente, event: Event) {
+  remove(client: Client, event: Event) {
     event.stopPropagation();
-    if (!confirm(`¿Eliminar a ${cliente.nombre}? Esta acción no se puede deshacer.`)) return;
+    if (!confirm(`¿Eliminar a ${client.nombre}? Esta acción no se puede deshacer.`)) return;
 
-    this.clientesService.remove(cliente.id).subscribe(() => {
+    this.clientsService.remove(client.id).subscribe(() => {
       this.load();
-      this.loadResumen();
+      this.loadSummary();
     });
   }
 
@@ -129,7 +124,7 @@ export class ClientesComponent implements OnInit {
   onSaved() {
     this.modalOpen.set(false);
     this.load();
-    this.loadResumen();
+    this.loadSummary();
   }
 
   fromIndex() {

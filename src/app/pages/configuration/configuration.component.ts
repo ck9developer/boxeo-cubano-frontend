@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { GymConfig } from '../../core/models/configuracion.model';
-import { ConfiguracionService } from '../../core/services/configuracion.service';
+import { GymConfig } from '../../core/models/configuration.model';
+import { ConfigurationService } from '../../core/services/configuration.service';
 
 interface ConfigForm {
   nombre: string;
@@ -17,13 +17,13 @@ interface ConfigForm {
 }
 
 @Component({
-  selector: 'app-configuracion',
+  selector: 'app-configuration',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './configuracion.component.html',
+  templateUrl: './configuration.component.html',
 })
-export class ConfiguracionComponent implements OnInit {
-  readonly dias = Array.from({ length: 31 }, (_, i) => i + 1);
+export class ConfigurationComponent implements OnInit {
+  readonly days = Array.from({ length: 31 }, (_, i) => i + 1);
 
   config = signal<GymConfig | null>(null);
   form: ConfigForm = this.emptyForm();
@@ -31,10 +31,10 @@ export class ConfiguracionComponent implements OnInit {
 
   savingInfo = signal(false);
   savedInfo = signal(false);
-  savingCuotas = signal(false);
-  savedCuotas = signal(false);
+  savingFees = signal(false);
+  savedFees = signal(false);
 
-  constructor(private readonly configuracionService: ConfiguracionService) {}
+  constructor(private readonly configurationService: ConfigurationService) {}
 
   ngOnInit(): void {
     this.load();
@@ -42,7 +42,7 @@ export class ConfiguracionComponent implements OnInit {
 
   load() {
     this.loading.set(true);
-    this.configuracionService.get().subscribe((cfg) => {
+    this.configurationService.get().subscribe((cfg) => {
       this.config.set(cfg);
       this.form = {
         nombre: cfg.nombre,
@@ -59,10 +59,10 @@ export class ConfiguracionComponent implements OnInit {
     });
   }
 
-  guardarInfo() {
+  saveInfo() {
     this.savingInfo.set(true);
     this.savedInfo.set(false);
-    this.configuracionService
+    this.configurationService
       .update({
         nombre: this.form.nombre,
         email: this.form.email,
@@ -81,10 +81,10 @@ export class ConfiguracionComponent implements OnInit {
       });
   }
 
-  guardarCuotas() {
-    this.savingCuotas.set(true);
-    this.savedCuotas.set(false);
-    this.configuracionService
+  saveFees() {
+    this.savingFees.set(true);
+    this.savedFees.set(false);
+    this.configurationService
       .update({
         cuotaTresDias: this.form.cuotaTresDias,
         cuotaCuatroDias: this.form.cuotaCuatroDias,
@@ -94,11 +94,11 @@ export class ConfiguracionComponent implements OnInit {
       .subscribe({
         next: (cfg) => {
           this.config.set(cfg);
-          this.savingCuotas.set(false);
-          this.savedCuotas.set(true);
-          setTimeout(() => this.savedCuotas.set(false), 2000);
+          this.savingFees.set(false);
+          this.savedFees.set(true);
+          setTimeout(() => this.savedFees.set(false), 2000);
         },
-        error: () => this.savingCuotas.set(false),
+        error: () => this.savingFees.set(false),
       });
   }
 

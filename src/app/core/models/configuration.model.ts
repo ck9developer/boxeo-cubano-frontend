@@ -12,7 +12,7 @@ export interface GymConfig {
   updatedAt: string;
 }
 
-export interface UpdateConfiguracionDto {
+export interface UpdateConfigurationDto {
   nombre?: string;
   email?: string;
   telefono?: string;

@@ -42,14 +42,14 @@
     class="rounded-lg border border-neutral-300 bg-white px-3 py-2.5 text-sm focus:border-brand-red focus:outline-none focus:ring-1 focus:ring-brand-red"
   >
     <option value="">Tipo de cuota: Todos</option>
-    <option value="TRES_DIAS">{{ tipoCuotaLabel['TRES_DIAS'] }}</option>
-    <option value="CUATRO_DIAS">{{ tipoCuotaLabel['CUATRO_DIAS'] }}</option>
-    <option value="TODOS_LOS_DIAS">{{ tipoCuotaLabel['TODOS_LOS_DIAS'] }}</option>
+    <option value="TRES_DIAS">{{ feeTypeLabel['TRES_DIAS'] }}</option>
+    <option value="CUATRO_DIAS">{{ feeTypeLabel['CUATRO_DIAS'] }}</option>
+    <option value="TODOS_LOS_DIAS">{{ feeTypeLabel['TODOS_LOS_DIAS'] }}</option>
   </select>
 
   <button
     type="button"
-    (click)="abrirNuevo()"
+    (click)="openNew()"
     class="flex items-center gap-2 rounded-lg bg-brand-red px-4 py-2.5 text-sm font-semibold text-white hover:bg-brand-red-dark"
   >
     <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -72,7 +72,7 @@
     </div>
     <div>
       <div class="text-sm text-neutral-500">Clientes activos</div>
-      <div class="text-2xl font-bold text-neutral-900">{{ resumen()?.clientesActivos ?? '—' }}</div>
+      <div class="text-2xl font-bold text-neutral-900">{{ summary()?.clientesActivos ?? '—' }}</div>
       <div class="text-xs text-neutral-400">Con cuota activa</div>
     </div>
   </div>
@@ -89,7 +89,7 @@
     </div>
     <div>
       <div class="text-sm text-neutral-500">Pagos pendientes</div>
-      <div class="text-2xl font-bold text-neutral-900">{{ resumen()?.pagosPendientes ?? '—' }}</div>
+      <div class="text-2xl font-bold text-neutral-900">{{ summary()?.pagosPendientes ?? '—' }}</div>
       <div class="text-xs text-neutral-400">Clientes con pagos pendientes</div>
     </div>
   </div>
@@ -100,7 +100,7 @@
     </div>
     <div>
       <div class="text-sm text-neutral-500">Ingresos del mes</div>
-      <div class="text-2xl font-bold text-neutral-900">{{ resumen()?.ingresosMes ?? '—' }} €</div>
+      <div class="text-2xl font-bold text-neutral-900">{{ summary()?.ingresosMes ?? '—' }} €</div>
       <div class="text-xs text-neutral-400">Total ingresado este mes</div>
     </div>
   </div>
@@ -125,14 +125,14 @@
           <tr>
             <td colspan="7" class="px-6 py-10 text-center text-neutral-400">Cargando clientes...</td>
           </tr>
-        } @else if (clientes().length === 0) {
+        } @else if (clients().length === 0) {
           <tr>
             <td colspan="7" class="px-6 py-10 text-center text-neutral-400">No hay clientes que coincidan con la búsqueda.</td>
           </tr>
         } @else {
-          @for (cliente of clientes(); track cliente.id) {
+          @for (client of clients(); track client.id) {
             <tr
-              (click)="verCliente(cliente)"
+              (click)="viewClient(client)"
               class="cursor-pointer border-b border-neutral-50 transition hover:bg-neutral-50"
             >
               <td class="px-6 py-4">
@@ -140,27 +140,27 @@
                   <div
                     class="flex h-9 w-9 items-center justify-center rounded-full bg-red-100 text-sm font-semibold text-brand-red"
                   >
-                    {{ cliente.nombre.charAt(0).toUpperCase() }}
+                    {{ client.nombre.charAt(0).toUpperCase() }}
                   </div>
-                  <span class="font-medium text-neutral-900">{{ cliente.nombre }}</span>
+                  <span class="font-medium text-neutral-900">{{ client.nombre }}</span>
                 </div>
               </td>
-              <td class="px-6 py-4 text-neutral-600">{{ cliente.telefono }}</td>
-              <td class="px-6 py-4 text-neutral-600">{{ cliente.email }}</td>
-              <td class="px-6 py-4 text-neutral-600">{{ tipoCuotaLabel[cliente.tipoCuota] }}</td>
+              <td class="px-6 py-4 text-neutral-600">{{ client.telefono }}</td>
+              <td class="px-6 py-4 text-neutral-600">{{ client.email }}</td>
+              <td class="px-6 py-4 text-neutral-600">{{ feeTypeLabel[client.tipoCuota] }}</td>
               <td class="px-6 py-4">
-                @if (cliente.estado === 'pendiente') {
+                @if (client.estado === 'pendiente') {
                   <span class="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-semibold text-amber-700">Pendiente</span>
                 } @else {
                   <span class="rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-semibold text-emerald-700">Al día</span>
                 }
               </td>
-              <td class="px-6 py-4 text-neutral-600">{{ cliente.fechaAlta | date: 'dd MMM yyyy' }}</td>
+              <td class="px-6 py-4 text-neutral-600">{{ client.fechaAlta | date: 'dd MMM yyyy' }}</td>
               <td class="px-6 py-4">
                 <div class="flex items-center gap-2">
                   <button
                     type="button"
-                    (click)="editar(cliente, $event)"
+                    (click)="edit(client, $event)"
                     class="flex h-8 w-8 items-center justify-center rounded-lg border border-neutral-200 text-neutral-500 hover:bg-neutral-100"
                   >
                     <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2">
@@ -173,7 +173,7 @@
                   </button>
                   <button
                     type="button"
-                    (click)="eliminar(cliente, $event)"
+                    (click)="remove(client, $event)"
                     class="flex h-8 w-8 items-center justify-center rounded-lg border border-red-200 text-brand-red hover:bg-red-50"
                   >
                     <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2">
@@ -234,9 +234,9 @@
   </div>
 </div>
 
-<app-cliente-form-modal
+<app-client-form-modal
   [open]="modalOpen()"
-  [cliente]="clienteEnEdicion()"
+  [client]="clientBeingEdited()"
   (closed)="onModalClosed()"
   (saved)="onSaved()"
-></app-cliente-form-modal>
+></app-client-form-modal>

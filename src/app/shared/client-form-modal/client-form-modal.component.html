@@ -3,7 +3,7 @@
     <div class="w-full max-w-md rounded-xl bg-white p-6 shadow-xl">
       <div class="mb-4 flex items-center justify-between">
         <h3 class="text-lg font-bold text-neutral-900">
-          {{ cliente ? 'Editar cliente' : 'Nuevo cliente' }}
+          {{ client ? 'Editar cliente' : 'Nuevo cliente' }}
         </h3>
         <button type="button" (click)="close()" class="text-neutral-400 hover:text-neutral-600">
           <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2">
@@ -53,8 +53,8 @@
             [(ngModel)]="form.tipoCuota"
             class="w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm focus:border-brand-red focus:outline-none focus:ring-1 focus:ring-brand-red"
           >
-            @for (tipo of tiposCuota; track tipo) {
-              <option [value]="tipo">{{ tipoCuotaLabel[tipo] }}</option>
+            @for (fee of feeTypes; track fee) {
+              <option [value]="fee">{{ feeTypeLabel[fee] }}</option>
             }
           </select>
         </div>

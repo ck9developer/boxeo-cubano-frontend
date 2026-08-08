@@ -1,10 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
-import { GymConfig, UpdateConfiguracionDto } from '../models/configuracion.model';
+import { GymConfig, UpdateConfigurationDto } from '../models/configuration.model';
 
 @Injectable({ providedIn: 'root' })
-export class ConfiguracionService {
+export class ConfigurationService {
   private readonly baseUrl = `${environment.apiUrl}/configuracion`;
 
   constructor(private readonly http: HttpClient) {}
@@ -13,7 +13,7 @@ export class ConfiguracionService {
     return this.http.get<GymConfig>(this.baseUrl);
   }
 
-  update(dto: UpdateConfiguracionDto) {
+  update(dto: UpdateConfigurationDto) {
     return this.http.patch<GymConfig>(this.baseUrl, dto);
   }
 }

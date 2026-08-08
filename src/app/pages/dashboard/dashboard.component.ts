@@ -1,31 +1,31 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { DashboardResumen } from '../../core/models/auth.model';
-import { Cliente, TIPO_CUOTA_LABEL } from '../../core/models/cliente.model';
+import { DashboardSummary } from '../../core/models/auth.model';
+import { Client, FEE_TYPE_LABEL } from '../../core/models/client.model';
 import { AuthService } from '../../core/services/auth.service';
-import { ClientesService } from '../../core/services/clientes.service';
+import { ClientsService } from '../../core/services/clients.service';
 import { DashboardService } from '../../core/services/dashboard.service';
-import { ClienteFormModalComponent } from '../../shared/cliente-form-modal/cliente-form-modal.component';
+import { ClientFormModalComponent } from '../../shared/client-form-modal/client-form-modal.component';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, ClienteFormModalComponent],
+  imports: [CommonModule, RouterLink, ClientFormModalComponent],
   templateUrl: './dashboard.component.html',
 })
 export class DashboardComponent implements OnInit {
-  readonly tipoCuotaLabel = TIPO_CUOTA_LABEL;
+  readonly feeTypeLabel = FEE_TYPE_LABEL;
 
-  resumen = signal<DashboardResumen | null>(null);
-  clientesRecientes = signal<Cliente[]>([]);
+  summary = signal<DashboardSummary | null>(null);
+  recentClients = signal<Client[]>([]);
   loading = signal(true);
   modalOpen = signal(false);
 
   constructor(
     readonly authService: AuthService,
     private readonly dashboardService: DashboardService,
-    private readonly clientesService: ClientesService,
+    private readonly clientsService: ClientsService,
     private readonly router: Router,
   ) {}
 
@@ -35,21 +35,21 @@ export class DashboardComponent implements OnInit {
 
   load() {
     this.loading.set(true);
-    this.dashboardService.getResumen().subscribe((res) => this.resumen.set(res));
-    this.clientesService.findAll({ page: 1, perPage: 5 }).subscribe({
+    this.dashboardService.getSummary().subscribe((res) => this.summary.set(res));
+    this.clientsService.findAll({ page: 1, perPage: 5 }).subscribe({
       next: (res) => {
-        this.clientesRecientes.set(res.data);
+        this.recentClients.set(res.data);
         this.loading.set(false);
       },
       error: () => this.loading.set(false),
     });
   }
 
-  verCliente(cliente: Cliente) {
-    this.router.navigate(['/clientes', cliente.id]);
+  viewClient(client: Client) {
+    this.router.navigate(['/clients', client.id]);
   }
 
-  abrirNuevo() {
+  openNew() {
     this.modalOpen.set(true);
   }
 

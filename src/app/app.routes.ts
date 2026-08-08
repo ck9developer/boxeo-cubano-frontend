@@ -3,9 +3,9 @@ import { authGuard } from './core/guards/auth.guard';
 import { ShellComponent } from './layout/shell/shell.component';
 import { LoginComponent } from './pages/login/login.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
-import { ClientesComponent } from './pages/clientes/clientes.component';
-import { ClienteDetalleComponent } from './pages/cliente-detalle/cliente-detalle.component';
-import { ConfiguracionComponent } from './pages/configuracion/configuracion.component';
+import { ClientsComponent } from './pages/clients/clients.component';
+import { ClientDetailComponent } from './pages/client-detail/client-detail.component';
+import { ConfigurationComponent } from './pages/configuration/configuration.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -14,11 +14,11 @@ export const routes: Routes = [
     component: ShellComponent,
     canActivate: [authGuard],
     children: [
-      { path: '', pathMatch: 'full', redirectTo: 'inicio' },
-      { path: 'inicio', component: DashboardComponent },
-      { path: 'clientes', component: ClientesComponent },
-      { path: 'clientes/:id', component: ClienteDetalleComponent },
-      { path: 'configuracion', component: ConfiguracionComponent },
+      { path: '', pathMatch: 'full', redirectTo: 'home' },
+      { path: 'home', component: DashboardComponent },
+      { path: 'clients', component: ClientsComponent },
+      { path: 'clients/:id', component: ClientDetailComponent },
+      { path: 'configuration', component: ConfigurationComponent },
     ],
   },
   { path: '**', redirectTo: '' },

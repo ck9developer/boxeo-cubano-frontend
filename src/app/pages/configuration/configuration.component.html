@@ -15,7 +15,7 @@
         <h3 class="text-base font-bold text-neutral-900">Información del gimnasio</h3>
       </div>
 
-      <form class="space-y-4" (ngSubmit)="guardarInfo()">
+      <form class="space-y-4" (ngSubmit)="saveInfo()">
         <div>
           <label class="mb-1 block text-sm font-medium text-neutral-700">Nombre del gimnasio</label>
           <input
@@ -88,7 +88,7 @@
         <h3 class="text-base font-bold text-neutral-900">Cuotas y precios</h3>
       </div>
 
-      <form class="space-y-4" (ngSubmit)="guardarCuotas()">
+      <form class="space-y-4" (ngSubmit)="saveFees()">
         <div>
           <label class="mb-1 block text-sm font-medium text-neutral-700">Cuota 3 días/semana</label>
           <div class="relative">
@@ -135,8 +135,8 @@
             [(ngModel)]="form.diaVencimiento"
             class="w-full rounded-lg border border-neutral-300 px-3 py-2.5 text-sm focus:border-brand-red focus:outline-none focus:ring-1 focus:ring-brand-red"
           >
-            @for (dia of dias; track dia) {
-              <option [value]="dia">{{ dia }}</option>
+            @for (day of days; track day) {
+              <option [value]="day">{{ day }}</option>
             }
           </select>
           <p class="mt-1 text-xs text-neutral-400">Día del mes en que vence la cuota</p>
@@ -145,15 +145,15 @@
         <div class="flex items-center gap-3 pt-2">
           <button
             type="submit"
-            [disabled]="savingCuotas()"
+            [disabled]="savingFees()"
             class="flex items-center gap-2 rounded-lg bg-brand-red px-4 py-2.5 text-sm font-semibold text-white hover:bg-brand-red-dark disabled:opacity-60"
           >
             <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M17 21v-8H7v8M7 3v5h8" />
             </svg>
-            {{ savingCuotas() ? 'Guardando...' : 'Guardar cambios' }}
+            {{ savingFees() ? 'Guardando...' : 'Guardar cambios' }}
           </button>
-          @if (savedCuotas()) {
+          @if (savedFees()) {
             <span class="text-sm font-medium text-emerald-600">Guardado</span>
           }
         </div>

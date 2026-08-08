@@ -14,4 +14,8 @@ export class PaymentsService {
   create(clientId: string, dto: CreatePaymentDto) {
     return this.http.post<Payment>(`${environment.apiUrl}/clientes/${clientId}/pagos`, dto);
   }
+
+  remove(clientId: string, paymentId: string) {
+    return this.http.delete<void>(`${environment.apiUrl}/clientes/${clientId}/pagos/${paymentId}`);
+  }
 }

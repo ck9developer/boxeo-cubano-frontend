@@ -10,16 +10,22 @@
       Volver a clientes
     </button>
 
-    <button
-      type="button"
-      (click)="openPaymentModal()"
-      class="flex items-center gap-2 rounded-lg bg-brand-red px-4 py-2.5 text-sm font-semibold text-white hover:bg-brand-red-dark"
-    >
-      <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2">
-        <path stroke-linecap="round" d="M12 5v14M5 12h14" />
-      </svg>
-      Registrar pago
-    </button>
+    <div class="flex flex-col items-end gap-1.5">
+      <button
+        type="button"
+        (click)="openPaymentModal()"
+        [disabled]="!canRegisterPayment()"
+        class="flex items-center gap-2 rounded-lg bg-brand-red px-4 py-2.5 text-sm font-semibold text-white hover:bg-brand-red-dark disabled:cursor-not-allowed disabled:bg-neutral-300 disabled:text-neutral-500 disabled:hover:bg-neutral-300"
+      >
+        <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" d="M12 5v14M5 12h14" />
+        </svg>
+        Registrar pago
+      </button>
+      @if (!canRegisterPayment()) {
+        <p class="max-w-[220px] text-right text-xs text-neutral-400">{{ paymentUnlockMessage() }}</p>
+      }
+    </div>
   </div>
 
   <div class="mb-6 flex items-center gap-4 rounded-xl bg-white p-6 shadow-sm">
@@ -132,13 +138,30 @@
                 <div class="text-sm font-medium text-neutral-900">{{ payment.concepto }}</div>
                 <div class="text-xs text-neutral-400">{{ payment.fecha | date: 'dd MMM yyyy' }}</div>
               </div>
-              <div class="text-right">
-                <div class="text-sm font-semibold text-neutral-900">{{ payment.importe }} €</div>
-                @if (payment.estado === 'PAGADO') {
-                  <span class="text-xs font-semibold text-emerald-600">Pagado</span>
-                } @else {
-                  <span class="text-xs font-semibold text-amber-600">Pendiente</span>
-                }
+              <div class="flex items-center gap-3">
+                <div class="text-right">
+                  <div class="text-sm font-semibold text-neutral-900">{{ payment.importe }} €</div>
+                  @if (payment.estado === 'PAGADO') {
+                    <span class="text-xs font-semibold text-emerald-600">Pagado</span>
+                  } @else {
+                    <span class="text-xs font-semibold text-amber-600">Pendiente</span>
+                  }
+                </div>
+                <button
+                  type="button"
+                  (click)="deletePayment(payment)"
+                  [disabled]="deletingPaymentId() === payment.id"
+                  class="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg text-neutral-400 hover:bg-red-50 hover:text-brand-red disabled:opacity-40"
+                  aria-label="Eliminar pago"
+                >
+                  <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2">
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V4a1 1 0 011-1h4a1 1 0 011 1v3M4 7h16"
+                    />
+                  </svg>
+                </button>
               </div>
             </div>
           }
@@ -222,3 +245,11 @@
   }
 }
 }
+
+<app-confirm-dialog
+  [open]="paymentPendingDelete() !== null"
+  title="Eliminar pago"
+  [message]="'¿Eliminar el pago &quot;' + (paymentPendingDelete()?.concepto ?? '') + '&quot; de ' + (paymentPendingDelete()?.importe ?? '') + ' €? Esta acción no se puede deshacer.'"
+  (confirmed)="confirmDeletePayment()"
+  (cancelled)="cancelDeletePayment()"
+></app-confirm-dialog>

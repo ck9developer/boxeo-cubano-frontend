@@ -8,11 +8,12 @@ import { ClientsService } from '../../core/services/clients.service';
 import { DashboardService } from '../../core/services/dashboard.service';
 import { DashboardSummary } from '../../core/models/auth.model';
 import { ClientFormModalComponent } from '../../shared/client-form-modal/client-form-modal.component';
+import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-clients',
   standalone: true,
-  imports: [CommonModule, FormsModule, ClientFormModalComponent],
+  imports: [CommonModule, FormsModule, ClientFormModalComponent, ConfirmDialogComponent],
   templateUrl: './clients.component.html',
 })
 export class ClientsComponent implements OnInit {
@@ -33,6 +34,9 @@ export class ClientsComponent implements OnInit {
 
   modalOpen = signal(false);
   clientBeingEdited = signal<Client | null>(null);
+  clientPendingDelete = signal<Client | null>(null);
+
+  revenueVisible = signal(false);
 
   private readonly searchInput$ = new Subject<string>();
 
@@ -86,6 +90,10 @@ export class ClientsComponent implements OnInit {
     this.dashboardService.getSummary().subscribe((res) => this.summary.set(res));
   }
 
+  toggleRevenueVisibility() {
+    this.revenueVisible.update((v) => !v);
+  }
+
   goToPage(page: number) {
     if (page < 1 || page > this.totalPages()) return;
     this.page.set(page);
@@ -109,12 +117,22 @@ export class ClientsComponent implements OnInit {
 
   remove(client: Client, event: Event) {
     event.stopPropagation();
-    if (!confirm(`¿Eliminar a ${client.nombre}? Esta acción no se puede deshacer.`)) return;
+    this.clientPendingDelete.set(client);
+  }
+
+  confirmRemove() {
+    const client = this.clientPendingDelete();
+    if (!client) return;
 
     this.clientsService.remove(client.id).subscribe(() => {
+      this.clientPendingDelete.set(null);
       this.load();
       this.loadSummary();
     });
+  }
+
+  cancelRemove() {
+    this.clientPendingDelete.set(null);
   }
 
   onModalClosed() {

@@ -21,6 +21,7 @@ export class DashboardComponent implements OnInit {
   recentClients = signal<Client[]>([]);
   loading = signal(true);
   modalOpen = signal(false);
+  revenueVisible = signal(false);
 
   constructor(
     readonly authService: AuthService,
@@ -51,6 +52,10 @@ export class DashboardComponent implements OnInit {
 
   openNew() {
     this.modalOpen.set(true);
+  }
+
+  toggleRevenueVisibility() {
+    this.revenueVisible.update((v) => !v);
   }
 
   onModalClosed() {

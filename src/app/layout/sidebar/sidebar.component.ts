@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 
@@ -9,7 +9,14 @@ import { AuthService } from '../../core/services/auth.service';
   templateUrl: './sidebar.component.html',
 })
 export class SidebarComponent {
+  @Input() open = false;
+  @Output() closed = new EventEmitter<void>();
+
   constructor(readonly authService: AuthService) {}
+
+  close() {
+    this.closed.emit();
+  }
 
   logout() {
     this.authService.logout();

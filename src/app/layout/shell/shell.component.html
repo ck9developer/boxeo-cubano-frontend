@@ -1,11 +1,28 @@
 <div class="flex h-screen overflow-hidden bg-neutral-100">
-  <app-sidebar></app-sidebar>
-  <main class="flex-1 overflow-y-auto">
-    <div class="mx-auto max-w-7xl px-8 py-8">
-      <router-outlet></router-outlet>
-    </div>
-    <footer class="py-6 text-center text-xs text-neutral-400">
-      Boxeo Cubano CRM © 2024 · Hecho con pasión
-    </footer>
-  </main>
+  <app-sidebar [open]="mobileMenuOpen()" (closed)="mobileMenuOpen.set(false)"></app-sidebar>
+  <div class="flex flex-1 flex-col overflow-hidden">
+    <header class="flex items-center gap-3 border-b border-neutral-200 bg-white px-4 py-3 md:hidden">
+      <button
+        type="button"
+        (click)="mobileMenuOpen.set(true)"
+        aria-label="Abrir menú"
+        class="text-neutral-600 hover:text-neutral-900"
+      >
+        <svg viewBox="0 0 24 24" class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+      <span class="text-sm font-extrabold tracking-wide">
+        BOXEO <span class="text-brand-red">CUBANO</span>
+      </span>
+    </header>
+    <main class="flex-1 overflow-y-auto">
+      <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 md:px-8 md:py-8">
+        <router-outlet></router-outlet>
+      </div>
+      <footer class="py-6 text-center text-xs text-neutral-400">
+        Boxeo Cubano CRM © 2024 · Hecho con pasión
+      </footer>
+    </main>
+  </div>
 </div>

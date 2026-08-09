@@ -141,6 +141,7 @@ export class ClientDetailComponent implements OnInit {
         this.registeringPayment.set(false);
         this.paymentModalOpen.set(false);
         this.load();
+        this.clientsService.refreshAlertsCount();
       },
       error: () => {
         this.registeringPayment.set(false);
@@ -163,6 +164,7 @@ export class ClientDetailComponent implements OnInit {
         this.deletingPaymentId.set(null);
         this.paymentPendingDelete.set(null);
         this.load();
+        this.clientsService.refreshAlertsCount();
       },
       error: () => {
         this.deletingPaymentId.set(null);

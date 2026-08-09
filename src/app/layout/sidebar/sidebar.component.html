@@ -76,9 +76,9 @@
         />
       </svg>
       <span class="flex-1">Alertas</span>
-      @if (alertsCount() > 0) {
+      @if (clientsService.alertsCount() > 0) {
         <span class="flex h-5 min-w-5 items-center justify-center rounded-full bg-white px-1.5 text-[11px] font-bold text-brand-red">
-          {{ alertsCount() }}
+          {{ clientsService.alertsCount() }}
         </span>
       }
     </a>

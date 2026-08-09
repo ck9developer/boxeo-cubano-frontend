@@ -1,5 +1,5 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import {
   Client,
@@ -13,6 +13,9 @@ import {
 @Injectable({ providedIn: 'root' })
 export class ClientsService {
   private readonly baseUrl = `${environment.apiUrl}/clientes`;
+
+  private readonly alertsCountSignal = signal(0);
+  readonly alertsCount = this.alertsCountSignal.asReadonly();
 
   constructor(private readonly http: HttpClient) {}
 
@@ -46,5 +49,13 @@ export class ClientsService {
   getAlerts(warningDays = 5) {
     const params = new HttpParams().set('diasAviso', warningDays);
     return this.http.get<ClientAlerts>(`${this.baseUrl}/alertas`, { params });
+  }
+
+  setAlertsCount(alerts: ClientAlerts) {
+    this.alertsCountSignal.set(alerts.proximosAVencer.length + alerts.vencidos.length);
+  }
+
+  refreshAlertsCount() {
+    this.getAlerts().subscribe((res) => this.setAlertsCount(res));
   }
 }

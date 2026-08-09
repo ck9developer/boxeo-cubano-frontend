@@ -25,6 +25,7 @@ export class AlertsComponent implements OnInit {
     this.clientsService.getAlerts().subscribe({
       next: (res) => {
         this.alerts.set(res);
+        this.clientsService.setAlertsCount(res);
         this.loading.set(false);
       },
       error: () => this.loading.set(false),

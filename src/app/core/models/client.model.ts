@@ -65,3 +65,28 @@ export interface QueryClients {
   page?: number;
   perPage?: number;
 }
+
+export interface ExpiringClient {
+  id: string;
+  nombre: string;
+  telefono: string;
+  email: string;
+  tipoCuota: FeeType;
+  fechaVencimiento: string;
+  diasRestantes: number;
+}
+
+export interface OverdueClient {
+  id: string;
+  nombre: string;
+  telefono: string;
+  email: string;
+  tipoCuota: FeeType;
+  fechaVencimiento: string;
+  diasVencido: number;
+}
+
+export interface ClientAlerts {
+  proximosAVencer: ExpiringClient[];
+  vencidos: OverdueClient[];
+}

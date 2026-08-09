@@ -1,0 +1,92 @@
+<div class="mb-6">
+  <h1 class="text-2xl font-bold text-neutral-900">Alertas</h1>
+  <p class="mt-1 text-sm text-neutral-500">Clientes cuya cuota está a punto de vencer o ya venció.</p>
+</div>
+
+@if (loading()) {
+  <p class="text-neutral-400">Cargando alertas...</p>
+} @else {
+  <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+    <div class="rounded-xl bg-white p-6 shadow-sm">
+      <div class="mb-4 flex items-center gap-2">
+        <svg viewBox="0 0 24 24" class="h-5 w-5 text-amber-500" fill="none" stroke="currentColor" stroke-width="2">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"
+          />
+        </svg>
+        <h3 class="text-sm font-semibold text-neutral-900">
+          Vencen pronto ({{ alerts()?.proximosAVencer?.length ?? 0 }})
+        </h3>
+      </div>
+
+      @if (!alerts()?.proximosAVencer?.length) {
+        <p class="text-sm text-neutral-400">No hay clientes próximos a vencer.</p>
+      } @else {
+        <div class="space-y-3">
+          @for (client of alerts()!.proximosAVencer; track client.id) {
+            <a
+              [routerLink]="['/clients', client.id]"
+              class="flex items-center justify-between rounded-lg border border-amber-100 bg-amber-50 px-3 py-2.5 transition hover:bg-amber-100"
+            >
+              <div>
+                <div class="text-sm font-medium text-neutral-900">{{ client.nombre }}</div>
+                <div class="text-xs text-neutral-500">{{ client.telefono }}</div>
+              </div>
+              <div class="text-right">
+                <div class="text-xs font-semibold text-amber-700">
+                  @if (client.diasRestantes === 0) {
+                    Vence hoy
+                  } @else {
+                    Vence en {{ client.diasRestantes }} {{ client.diasRestantes === 1 ? 'día' : 'días' }}
+                  }
+                </div>
+                <div class="text-xs text-neutral-400">{{ client.fechaVencimiento | date: 'dd MMM yyyy' }}</div>
+              </div>
+            </a>
+          }
+        </div>
+      }
+    </div>
+
+    <div class="rounded-xl bg-white p-6 shadow-sm">
+      <div class="mb-4 flex items-center gap-2">
+        <svg viewBox="0 0 24 24" class="h-5 w-5 text-brand-red" fill="none" stroke="currentColor" stroke-width="2">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"
+          />
+        </svg>
+        <h3 class="text-sm font-semibold text-neutral-900">
+          Vencidos ({{ alerts()?.vencidos?.length ?? 0 }})
+        </h3>
+      </div>
+
+      @if (!alerts()?.vencidos?.length) {
+        <p class="text-sm text-neutral-400">No hay clientes con la cuota vencida.</p>
+      } @else {
+        <div class="space-y-3">
+          @for (client of alerts()!.vencidos; track client.id) {
+            <a
+              [routerLink]="['/clients', client.id]"
+              class="flex items-center justify-between rounded-lg border border-red-100 bg-red-50 px-3 py-2.5 transition hover:bg-red-100"
+            >
+              <div>
+                <div class="text-sm font-medium text-neutral-900">{{ client.nombre }}</div>
+                <div class="text-xs text-neutral-500">{{ client.telefono }}</div>
+              </div>
+              <div class="text-right">
+                <div class="text-xs font-semibold text-brand-red">
+                  Vencido hace {{ client.diasVencido }} {{ client.diasVencido === 1 ? 'día' : 'días' }}
+                </div>
+                <div class="text-xs text-neutral-400">{{ client.fechaVencimiento | date: 'dd MMM yyyy' }}</div>
+              </div>
+            </a>
+          }
+        </div>
+      }
+    </div>
+  </div>
+}

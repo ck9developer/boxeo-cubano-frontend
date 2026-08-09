@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import {
   Client,
+  ClientAlerts,
   ClientsPage,
   CreateClientDto,
   QueryClients,
@@ -40,5 +41,10 @@ export class ClientsService {
 
   remove(id: string) {
     return this.http.delete<void>(`${this.baseUrl}/${id}`);
+  }
+
+  getAlerts(warningDays = 5) {
+    const params = new HttpParams().set('diasAviso', warningDays);
+    return this.http.get<ClientAlerts>(`${this.baseUrl}/alertas`, { params });
   }
 }

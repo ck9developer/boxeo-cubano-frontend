@@ -1,6 +1,7 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
+import { ClientsService } from '../../core/services/clients.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -8,11 +9,18 @@ import { AuthService } from '../../core/services/auth.service';
   imports: [RouterLink, RouterLinkActive],
   templateUrl: './sidebar.component.html',
 })
-export class SidebarComponent {
+export class SidebarComponent implements OnInit {
   @Input() open = false;
   @Output() closed = new EventEmitter<void>();
 
-  constructor(readonly authService: AuthService) {}
+  constructor(
+    readonly authService: AuthService,
+    readonly clientsService: ClientsService,
+  ) {}
+
+  ngOnInit(): void {
+    this.clientsService.refreshAlertsCount();
+  }
 
   close() {
     this.closed.emit();

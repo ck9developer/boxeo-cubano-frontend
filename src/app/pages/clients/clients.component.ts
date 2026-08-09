@@ -128,6 +128,7 @@ export class ClientsComponent implements OnInit {
       this.clientPendingDelete.set(null);
       this.load();
       this.loadSummary();
+      this.clientsService.refreshAlertsCount();
     });
   }
 

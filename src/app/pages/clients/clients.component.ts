@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, computed, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { Subject, debounceTime } from 'rxjs';
 import { Client, ClientStatus, FeeType, FEE_TYPE_LABEL } from '../../core/models/client.model';
 import { ClientsService } from '../../core/services/clients.service';
@@ -13,7 +13,7 @@ import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dial
 @Component({
   selector: 'app-clients',
   standalone: true,
-  imports: [CommonModule, FormsModule, ClientFormModalComponent, ConfirmDialogComponent],
+  imports: [CommonModule, FormsModule, RouterLink, ClientFormModalComponent, ConfirmDialogComponent],
   templateUrl: './clients.component.html',
 })
 export class ClientsComponent implements OnInit {

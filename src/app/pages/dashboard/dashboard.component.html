@@ -6,7 +6,10 @@
 </div>
 
 <div class="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
-  <div class="flex items-center gap-4 rounded-xl bg-white p-5 shadow-sm">
+  <a
+    routerLink="/clients"
+    class="flex items-center gap-4 rounded-xl bg-white p-5 shadow-sm transition hover:shadow-md"
+  >
     <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-red-100 text-brand-red">
       <svg viewBox="0 0 24 24" class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2">
         <path
@@ -21,9 +24,12 @@
       <div class="text-2xl font-bold text-neutral-900">{{ summary()?.clientesActivos ?? '—' }}</div>
       <div class="text-xs text-neutral-400">Clientes con cuota activa</div>
     </div>
-  </div>
+  </a>
 
-  <div class="flex items-center gap-4 rounded-xl bg-white p-5 shadow-sm">
+  <a
+    routerLink="/alerts"
+    class="flex items-center gap-4 rounded-xl bg-white p-5 shadow-sm transition hover:shadow-md"
+  >
     <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-100 text-amber-600">
       <svg viewBox="0 0 24 24" class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2">
         <path
@@ -38,7 +44,7 @@
       <div class="text-2xl font-bold text-neutral-900">{{ summary()?.pagosPendientes ?? '—' }}</div>
       <div class="text-xs text-neutral-400">Clientes con pagos pendientes</div>
     </div>
-  </div>
+  </a>
 
   <div class="flex items-center gap-4 rounded-xl bg-white p-5 shadow-sm">
     <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-100 text-emerald-600">

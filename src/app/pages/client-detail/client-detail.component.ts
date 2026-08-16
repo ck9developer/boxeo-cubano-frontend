@@ -6,11 +6,12 @@ import { Client, CreatePaymentDto, Payment, PaymentStatus, FEE_TYPE_LABEL } from
 import { ClientsService } from '../../core/services/clients.service';
 import { PaymentsService } from '../../core/services/payments.service';
 import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog.component';
+import { ClientFormModalComponent } from '../../shared/client-form-modal/client-form-modal.component';
 
 @Component({
   selector: 'app-client-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, ConfirmDialogComponent],
+  imports: [CommonModule, FormsModule, RouterLink, ConfirmDialogComponent, ClientFormModalComponent],
   templateUrl: './client-detail.component.html',
 })
 export class ClientDetailComponent implements OnInit {
@@ -19,14 +20,20 @@ export class ClientDetailComponent implements OnInit {
   client = signal<Client | null>(null);
   loading = signal(true);
 
+  editModalOpen = signal(false);
+
   editingNotes = signal(false);
   notesDraft = '';
   savingNotes = signal(false);
 
+  payingMatricula = signal(false);
+
   paymentModalOpen = signal(false);
+  editingPayment = signal<Payment | null>(null);
   paymentConcept = '';
   paymentAmount: number | null = null;
   paymentStatus: '' | PaymentStatus = '';
+  paymentDate = '';
   registeringPayment = signal(false);
   paymentError = signal('');
   deletingPaymentId = signal<string | null>(null);
@@ -62,6 +69,20 @@ export class ClientDetailComponent implements OnInit {
 
   goBack() {
     this.router.navigateByUrl('/clients');
+  }
+
+  openEdit() {
+    this.editModalOpen.set(true);
+  }
+
+  onEditClosed() {
+    this.editModalOpen.set(false);
+  }
+
+  onEditSaved() {
+    this.editModalOpen.set(false);
+    this.load();
+    this.clientsService.refreshAlertsCount();
   }
 
   private lastPaidPayment() {
@@ -115,16 +136,40 @@ export class ClientDetailComponent implements OnInit {
       });
   }
 
-  openPaymentModal() {
-    this.paymentConcept = '';
-    this.paymentAmount = null;
-    this.paymentStatus = '';
+  payMatricula() {
+    if (this.client()?.matricula === 'PAGADO') return;
+
+    this.payingMatricula.set(true);
+    this.clientsService.update(this.clientId, { matricula: 'PAGADO' }).subscribe({
+      next: () => {
+        this.payingMatricula.set(false);
+        this.load();
+      },
+      error: () => this.payingMatricula.set(false),
+    });
+  }
+
+  openPaymentModal(payment?: Payment) {
+    if (payment) {
+      this.editingPayment.set(payment);
+      this.paymentConcept = payment.concepto;
+      this.paymentAmount = Number(payment.importe);
+      this.paymentStatus = payment.estado;
+      this.paymentDate = payment.fecha.slice(0, 10);
+    } else {
+      this.editingPayment.set(null);
+      this.paymentConcept = '';
+      this.paymentAmount = null;
+      this.paymentStatus = '';
+      this.paymentDate = this.todayDateInput();
+    }
     this.paymentError.set('');
     this.paymentModalOpen.set(true);
   }
 
   closePaymentModal() {
     this.paymentModalOpen.set(false);
+    this.editingPayment.set(null);
   }
 
   registerPayment() {
@@ -135,19 +180,33 @@ export class ClientDetailComponent implements OnInit {
     if (this.paymentConcept) dto.concepto = this.paymentConcept;
     if (this.paymentAmount !== null) dto.importe = this.paymentAmount;
     if (this.paymentStatus) dto.estado = this.paymentStatus;
+    if (this.paymentDate) dto.fecha = this.paymentDate;
 
-    this.paymentsService.create(this.clientId, dto).subscribe({
+    const editing = this.editingPayment();
+    const request = editing
+      ? this.paymentsService.update(this.clientId, editing.id, dto)
+      : this.paymentsService.create(this.clientId, dto);
+
+    request.subscribe({
       next: () => {
         this.registeringPayment.set(false);
         this.paymentModalOpen.set(false);
+        this.editingPayment.set(null);
         this.load();
         this.clientsService.refreshAlertsCount();
       },
       error: () => {
         this.registeringPayment.set(false);
-        this.paymentError.set('No se pudo registrar el pago.');
+        this.paymentError.set(editing ? 'No se pudo actualizar el pago.' : 'No se pudo registrar el pago.');
       },
     });
+  }
+
+  private todayDateInput(): string {
+    const d = new Date();
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    return `${d.getFullYear()}-${mm}-${dd}`;
   }
 
   deletePayment(payment: Payment) {

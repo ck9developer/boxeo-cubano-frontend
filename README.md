@@ -1,6 +1,6 @@
-# Boxeo Cubano CRM — Frontend
+# Williams Box Cuba CRM — Frontend
 
-Frontend en Angular 18 (standalone components) + Tailwind CSS para el CRM del gimnasio Boxeo Cubano. Consume la API en [`../boxeo-cubano-api`](../boxeo-cubano-api).
+Frontend en Angular 18 (standalone components) + Tailwind CSS para el CRM del gimnasio Williams Box Cuba. Consume la API en [`../boxeo-cubano-api`](../boxeo-cubano-api).
 
 ## Stack
 

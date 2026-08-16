@@ -1,7 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output, OnChanges, SimpleChanges, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Client, CreateClientDto, FeeType, FEE_TYPE_LABEL } from '../../core/models/client.model';
+import {
+  Client,
+  CreateClientDto,
+  FeeType,
+  FEE_TYPE_LABEL,
+  MatriculaStatus,
+  MATRICULA_LABEL,
+} from '../../core/models/client.model';
 import { ClientsService } from '../../core/services/clients.service';
 
 @Component({
@@ -18,6 +25,8 @@ export class ClientFormModalComponent implements OnChanges {
 
   readonly feeTypes: FeeType[] = ['TRES_DIAS', 'CUATRO_DIAS', 'TODOS_LOS_DIAS'];
   readonly feeTypeLabel = FEE_TYPE_LABEL;
+  readonly matriculaStatuses: MatriculaStatus[] = ['PAGADO', 'PENDIENTE'];
+  readonly matriculaLabel = MATRICULA_LABEL;
 
   form: CreateClientDto = this.emptyForm();
   saving = signal(false);
@@ -32,8 +41,10 @@ export class ClientFormModalComponent implements OnChanges {
         ? {
             nombre: this.client.nombre,
             telefono: this.client.telefono,
-            email: this.client.email,
+            email: this.client.email ?? '',
             tipoCuota: this.client.tipoCuota,
+            fechaAlta: this.client.fechaAlta.slice(0, 10),
+            matricula: this.client.matricula,
             observaciones: this.client.observaciones ?? '',
           }
         : this.emptyForm();
@@ -45,7 +56,7 @@ export class ClientFormModalComponent implements OnChanges {
   }
 
   submit() {
-    if (!this.form.nombre || !this.form.telefono || !this.form.email || !this.form.tipoCuota) {
+    if (!this.form.nombre || !this.form.telefono || !this.form.tipoCuota) {
       this.errorMessage.set('Completa los campos obligatorios.');
       return;
     }
@@ -70,6 +81,21 @@ export class ClientFormModalComponent implements OnChanges {
   }
 
   private emptyForm(): CreateClientDto {
-    return { nombre: '', telefono: '', email: '', tipoCuota: 'TRES_DIAS', observaciones: '' };
+    return {
+      nombre: '',
+      telefono: '',
+      email: '',
+      tipoCuota: 'TRES_DIAS',
+      fechaAlta: this.todayDateInput(),
+      matricula: 'PENDIENTE',
+      observaciones: '',
+    };
+  }
+
+  private todayDateInput(): string {
+    const d = new Date();
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    return `${d.getFullYear()}-${mm}-${dd}`;
   }
 }

@@ -3,7 +3,15 @@ import { Component, OnInit, computed, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subject, debounceTime } from 'rxjs';
-import { Client, ClientStatus, FeeType, FEE_TYPE_LABEL } from '../../core/models/client.model';
+import {
+  Client,
+  ClientStatus,
+  FeeType,
+  FEE_TYPE_LABEL,
+  CLIENT_STATUS_LABEL,
+  MatriculaStatus,
+  MATRICULA_LABEL,
+} from '../../core/models/client.model';
 import { ClientsService } from '../../core/services/clients.service';
 import { DashboardService } from '../../core/services/dashboard.service';
 import { DashboardSummary } from '../../core/models/auth.model';
@@ -18,6 +26,8 @@ import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dial
 })
 export class ClientsComponent implements OnInit {
   readonly feeTypeLabel = FEE_TYPE_LABEL;
+  readonly matriculaLabel = MATRICULA_LABEL;
+  readonly statusLabel = CLIENT_STATUS_LABEL;
 
   clients = signal<Client[]>([]);
   summary = signal<DashboardSummary | null>(null);
@@ -26,6 +36,7 @@ export class ClientsComponent implements OnInit {
   search = '';
   estado: ClientStatus | '' = '';
   tipoCuota: FeeType | '' = '';
+  matricula: MatriculaStatus | '' = '';
   page = signal(1);
   perPage = 8;
   total = signal(0);
@@ -35,8 +46,6 @@ export class ClientsComponent implements OnInit {
   modalOpen = signal(false);
   clientBeingEdited = signal<Client | null>(null);
   clientPendingDelete = signal<Client | null>(null);
-
-  revenueVisible = signal(false);
 
   private readonly searchInput$ = new Subject<string>();
 
@@ -72,6 +81,7 @@ export class ClientsComponent implements OnInit {
         search: this.search || undefined,
         estado: this.estado || undefined,
         tipoCuota: this.tipoCuota || undefined,
+        matricula: this.matricula || undefined,
         page: this.page(),
         perPage: this.perPage,
       })
@@ -88,10 +98,6 @@ export class ClientsComponent implements OnInit {
 
   loadSummary() {
     this.dashboardService.getSummary().subscribe((res) => this.summary.set(res));
-  }
-
-  toggleRevenueVisibility() {
-    this.revenueVisible.update((v) => !v);
   }
 
   goToPage(page: number) {
@@ -144,6 +150,7 @@ export class ClientsComponent implements OnInit {
     this.modalOpen.set(false);
     this.load();
     this.loadSummary();
+    this.clientsService.refreshAlertsCount();
   }
 
   fromIndex() {

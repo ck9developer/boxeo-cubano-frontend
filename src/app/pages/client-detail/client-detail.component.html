@@ -11,17 +11,30 @@
     </button>
 
     <div class="flex flex-col items-start gap-1.5 sm:items-end">
-      <button
-        type="button"
-        (click)="openPaymentModal()"
-        [disabled]="!canRegisterPayment()"
-        class="flex items-center gap-2 rounded-lg bg-brand-red px-4 py-2.5 text-sm font-semibold text-white hover:bg-brand-red-dark disabled:cursor-not-allowed disabled:bg-neutral-300 disabled:text-neutral-500 disabled:hover:bg-neutral-300"
-      >
-        <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" d="M12 5v14M5 12h14" />
-        </svg>
-        Registrar pago
-      </button>
+      <div class="flex flex-wrap items-center gap-3">
+        <button
+          type="button"
+          (click)="payMatricula()"
+          [disabled]="c.matricula === 'PAGADO' || payingMatricula()"
+          class="flex items-center gap-2 rounded-lg border border-brand-red px-4 py-2.5 text-sm font-semibold text-brand-red hover:bg-red-50 disabled:cursor-not-allowed disabled:border-neutral-300 disabled:text-neutral-400 disabled:hover:bg-transparent"
+        >
+          <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+          </svg>
+          {{ c.matricula === 'PAGADO' ? 'Matrícula pagada' : (payingMatricula() ? 'Guardando...' : 'Pagar matrícula') }}
+        </button>
+        <button
+          type="button"
+          (click)="openPaymentModal()"
+          [disabled]="!canRegisterPayment()"
+          class="flex items-center gap-2 rounded-lg bg-brand-red px-4 py-2.5 text-sm font-semibold text-white hover:bg-brand-red-dark disabled:cursor-not-allowed disabled:bg-neutral-300 disabled:text-neutral-500 disabled:hover:bg-neutral-300"
+        >
+          <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" d="M12 5v14M5 12h14" />
+          </svg>
+          Registrar pago
+        </button>
+      </div>
       @if (!canRegisterPayment()) {
         <p class="max-w-[260px] text-xs text-neutral-400 sm:max-w-[220px] sm:text-right">{{ paymentUnlockMessage() }}</p>
       }
@@ -35,8 +48,10 @@
     <div class="min-w-0 flex-1">
       <div class="flex flex-wrap items-center gap-3">
         <h2 class="text-xl font-bold text-neutral-900">{{ c.nombre }}</h2>
-        @if (c.estado === 'pendiente') {
-          <span class="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-semibold text-amber-700">Pendiente</span>
+        @if (c.estado === 'vencido') {
+          <span class="rounded-full bg-red-100 px-2.5 py-1 text-xs font-semibold text-brand-red">Vencido</span>
+        } @else if (c.estado === 'por_vencer') {
+          <span class="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-semibold text-amber-700">Próximo a vencer</span>
         } @else {
           <span class="rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-semibold text-emerald-700">Al día</span>
         }
@@ -48,20 +63,38 @@
           </svg>
           {{ c.telefono }}
         </span>
-        <span class="flex items-center gap-1.5">
-          <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-          </svg>
-          {{ c.email }}
-        </span>
+        @if (c.email) {
+          <span class="flex items-center gap-1.5">
+            <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+            {{ c.email }}
+          </span>
+        }
       </div>
     </div>
   </div>
 
-  <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
-    <div class="lg:col-span-2 space-y-6">
+  <div class="grid grid-cols-1 gap-6 lg:grid-cols-5">
+    <div class="lg:col-span-3 space-y-6">
       <div class="rounded-xl bg-white p-6 shadow-sm">
-        <h3 class="mb-4 text-sm font-semibold text-neutral-900">Información</h3>
+        <div class="mb-4 flex items-center justify-between">
+          <h3 class="text-sm font-semibold text-neutral-900">Información</h3>
+          <button
+            type="button"
+            (click)="openEdit()"
+            aria-label="Editar cliente"
+            class="text-neutral-400 hover:text-brand-red"
+          >
+            <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+              />
+            </svg>
+          </button>
+        </div>
         <dl class="grid grid-cols-1 gap-y-4 text-sm sm:grid-cols-2 sm:gap-x-6">
           <div>
             <dt class="text-neutral-400">Nombre completo</dt>
@@ -73,7 +106,7 @@
           </div>
           <div>
             <dt class="text-neutral-400">Email</dt>
-            <dd class="mt-0.5 font-medium text-neutral-900">{{ c.email }}</dd>
+            <dd class="mt-0.5 font-medium text-neutral-900">{{ c.email || 'Sin email' }}</dd>
           </div>
           <div>
             <dt class="text-neutral-400">Tipo de cuota</dt>
@@ -82,6 +115,16 @@
           <div>
             <dt class="text-neutral-400">Fecha de alta</dt>
             <dd class="mt-0.5 font-medium text-neutral-900">{{ c.fechaAlta | date: 'dd MMM yyyy' }}</dd>
+          </div>
+          <div>
+            <dt class="text-neutral-400">Matrícula</dt>
+            <dd class="mt-0.5">
+              @if (c.matricula === 'PAGADO') {
+                <span class="rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-semibold text-emerald-700">Pagada</span>
+              } @else {
+                <span class="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-semibold text-amber-700">No pagada</span>
+              }
+            </dd>
           </div>
         </dl>
       </div>
@@ -125,7 +168,7 @@
       </div>
     </div>
 
-    <div class="rounded-xl bg-white p-6 shadow-sm lg:col-span-1">
+    <div class="rounded-xl bg-white p-6 shadow-sm lg:col-span-2">
       <h3 class="mb-4 text-sm font-semibold text-neutral-900">Historial de pagos</h3>
 
       @if (!c.pagos || c.pagos.length === 0) {
@@ -147,6 +190,20 @@
                     <span class="text-xs font-semibold text-amber-600">Pendiente</span>
                   }
                 </div>
+                <button
+                  type="button"
+                  (click)="openPaymentModal(payment)"
+                  class="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg text-neutral-400 hover:bg-neutral-100 hover:text-brand-red"
+                  aria-label="Editar pago"
+                >
+                  <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2">
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                    />
+                  </svg>
+                </button>
                 <button
                   type="button"
                   (click)="deletePayment(payment)"
@@ -174,7 +231,7 @@
     <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
       <div class="w-full max-w-sm rounded-xl bg-white p-6 shadow-xl">
         <div class="mb-4 flex items-center justify-between">
-          <h3 class="text-lg font-bold text-neutral-900">Registrar pago</h3>
+          <h3 class="text-lg font-bold text-neutral-900">{{ editingPayment() ? 'Editar pago' : 'Registrar pago' }}</h3>
           <button type="button" (click)="closePaymentModal()" class="text-neutral-400 hover:text-neutral-600">
             <svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -182,9 +239,11 @@
           </button>
         </div>
 
-        <p class="mb-4 text-sm text-neutral-500">
-          Deja el importe y el concepto vacíos para calcularlos automáticamente según la cuota del cliente ({{ feeTypeLabel[c.tipoCuota] }}).
-        </p>
+        @if (!editingPayment()) {
+          <p class="mb-4 text-sm text-neutral-500">
+            Deja el importe y el concepto vacíos para calcularlos automáticamente según la cuota del cliente ({{ feeTypeLabel[c.tipoCuota] }}).
+          </p>
+        }
 
         <form class="space-y-4" (ngSubmit)="registerPayment()">
           <div>
@@ -223,6 +282,16 @@
             </select>
           </div>
 
+          <div>
+            <label class="mb-1 block text-sm font-medium text-neutral-700">Fecha</label>
+            <input
+              type="date"
+              name="fecha"
+              [(ngModel)]="paymentDate"
+              class="w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm focus:border-brand-red focus:outline-none focus:ring-1 focus:ring-brand-red"
+            />
+          </div>
+
           @if (paymentError()) {
             <p class="text-sm text-brand-red">{{ paymentError() }}</p>
           }
@@ -236,7 +305,7 @@
               [disabled]="registeringPayment()"
               class="rounded-lg bg-brand-red px-4 py-2 text-sm font-semibold text-white hover:bg-brand-red-dark disabled:opacity-60"
             >
-              {{ registeringPayment() ? 'Registrando...' : 'Registrar' }}
+              {{ registeringPayment() ? 'Guardando...' : (editingPayment() ? 'Guardar' : 'Registrar') }}
             </button>
           </div>
         </form>
@@ -245,6 +314,13 @@
   }
 }
 }
+
+<app-client-form-modal
+  [open]="editModalOpen()"
+  [client]="client()"
+  (closed)="onEditClosed()"
+  (saved)="onEditSaved()"
+></app-client-form-modal>
 
 <app-confirm-dialog
   [open]="paymentPendingDelete() !== null"

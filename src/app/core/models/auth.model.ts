@@ -12,5 +12,4 @@ export interface LoginResponse {
 export interface DashboardSummary {
   clientesActivos: number;
   pagosPendientes: number;
-  ingresosMes: string | number;
 }

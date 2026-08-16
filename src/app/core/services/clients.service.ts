@@ -23,6 +23,7 @@ export class ClientsService {
     let params = new HttpParams();
     if (query.search) params = params.set('search', query.search);
     if (query.tipoCuota) params = params.set('tipoCuota', query.tipoCuota);
+    if (query.matricula) params = params.set('matricula', query.matricula);
     if (query.estado) params = params.set('estado', query.estado);
     if (query.page) params = params.set('page', query.page);
     if (query.perPage) params = params.set('perPage', query.perPage);

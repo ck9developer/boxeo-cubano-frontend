@@ -36,7 +36,7 @@
         </div>
 
         <div>
-          <label class="mb-1 block text-sm font-medium text-neutral-700">Email</label>
+          <label class="mb-1 block text-sm font-medium text-neutral-700">Email <span class="font-normal text-neutral-400">(opcional)</span></label>
           <input
             type="email"
             name="email"
@@ -57,6 +57,31 @@
               <option [value]="fee">{{ feeTypeLabel[fee] }}</option>
             }
           </select>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="mb-1 block text-sm font-medium text-neutral-700">Fecha de alta</label>
+            <input
+              type="date"
+              name="fechaAlta"
+              [(ngModel)]="form.fechaAlta"
+              class="w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm focus:border-brand-red focus:outline-none focus:ring-1 focus:ring-brand-red"
+            />
+          </div>
+
+          <div>
+            <label class="mb-1 block text-sm font-medium text-neutral-700">Matrícula</label>
+            <select
+              name="matricula"
+              [(ngModel)]="form.matricula"
+              class="w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm focus:border-brand-red focus:outline-none focus:ring-1 focus:ring-brand-red"
+            >
+              @for (status of matriculaStatuses; track status) {
+                <option [value]="status">{{ matriculaLabel[status] }}</option>
+              }
+            </select>
+          </div>
         </div>
 
         <div>

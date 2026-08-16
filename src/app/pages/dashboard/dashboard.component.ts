@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { DashboardSummary } from '../../core/models/auth.model';
-import { Client, FEE_TYPE_LABEL } from '../../core/models/client.model';
+import { Client, FEE_TYPE_LABEL, MATRICULA_LABEL } from '../../core/models/client.model';
 import { AuthService } from '../../core/services/auth.service';
 import { ClientsService } from '../../core/services/clients.service';
 import { DashboardService } from '../../core/services/dashboard.service';
@@ -16,12 +16,12 @@ import { ClientFormModalComponent } from '../../shared/client-form-modal/client-
 })
 export class DashboardComponent implements OnInit {
   readonly feeTypeLabel = FEE_TYPE_LABEL;
+  readonly matriculaLabel = MATRICULA_LABEL;
 
   summary = signal<DashboardSummary | null>(null);
   recentClients = signal<Client[]>([]);
   loading = signal(true);
   modalOpen = signal(false);
-  revenueVisible = signal(false);
 
   constructor(
     readonly authService: AuthService,
@@ -54,10 +54,6 @@ export class DashboardComponent implements OnInit {
     this.modalOpen.set(true);
   }
 
-  toggleRevenueVisibility() {
-    this.revenueVisible.update((v) => !v);
-  }
-
   onModalClosed() {
     this.modalOpen.set(false);
   }
@@ -65,5 +61,6 @@ export class DashboardComponent implements OnInit {
   onSaved() {
     this.modalOpen.set(false);
     this.load();
+    this.clientsService.refreshAlertsCount();
   }
 }
